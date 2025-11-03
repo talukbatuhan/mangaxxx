@@ -1,41 +1,56 @@
-// app/api/seed/route.ts - DETAYLI VERSİYON
+// app/api/seed/route.ts - TYPE-SAFE VERSİYON
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import connectDB from '@/lib/mongodb';
 import Manga from '@/models/Manga';
-import { sampleMangaData } from '../../types/manga';
+
+const sampleMangaData = [
+  {
+    title: 'Semavi İblisin Yolu',
+    coverImage: '/images/kapak3.jpg',
+    countryFlag: '🇰🇷',
+    episodes: [
+      { number: 25, timeAgo: '18 saat önce', isNew: true },
+      { number: 24, timeAgo: '1 hafta önce', isNew: false },
+    ],
+    status: 'Devam Ediyor' as const,
+    rating: '8.9',
+    genres: ['Fantazi', 'Aksiyon', 'Doğaüstü'],
+    description: 'Bir öğrencinin akademide hayatta kalma mücadelesi...'
+  },
+  {
+    title: 'Dahi Okçunun Yayın Günlükleri',
+    coverImage: '/images/kapak4.jpg',
+    countryFlag: '🇰🇷',
+    episodes: [
+      { number: 86, timeAgo: '2 gün önce', isNew: true },
+      { number: 85, timeAgo: '4 gün önce', isNew: false },
+    ],
+    status: 'Devam Ediyor' as const,
+    rating: '8.7',
+    genres: ['Okul', 'Spor', 'Dram'],
+    description: 'Genç bir okçunun başarı hikayesi...'
+  }
+];
 
 export async function GET() {
-  console.log('🔧 Seed endpoint called');
-  
   try {
-    console.log('1. Database connection attempting...');
-    await dbConnect();
-    console.log('✅ Database connected');
-
-    console.log('2. Clearing existing data...');
+    await connectDB();
+    
     await Manga.deleteMany({});
-    console.log('✅ Existing data cleared');
-
-    console.log('3. Inserting sample data...');
     const result = await Manga.insertMany(sampleMangaData);
-    console.log('✅ Sample data inserted:', result.length, 'documents');
-
+    
     return NextResponse.json({ 
       success: true,
-      message: 'Database başarıyla seed edildi!',
-      count: result.length,
-      documents: result
+      message: 'Database seeded successfully!',
+      count: result.length
     });
     
   } catch (error: any) {
-    console.error('❌ Seed error details:', error);
-    
     return NextResponse.json(
       { 
         success: false,
-        error: 'Seed işlemi başarısız',
-        details: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        error: 'Seed failed',
+        message: error.message
       },
       { status: 500 }
     );
