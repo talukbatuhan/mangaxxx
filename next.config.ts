@@ -1,8 +1,18 @@
-import type { NextConfig } from "next";
+// next.config.js - GÜNCELLENMİŞ
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['mongoose']
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  env: {
+    MONGODB_URI: process.env.MONGODB_URI,
+  }
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
-};
-
-export default nextConfig;
+module.exports = nextConfig

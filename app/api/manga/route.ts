@@ -1,22 +1,32 @@
-// app/api/manga/route.ts
+// app/api/manga/route.ts - DÜZELTİLMİŞ
 import { NextResponse } from 'next/server';
-import Manga from './models/Manga';
+import dbConnect from '@/lib/mongodb';
+import Manga from '@/models/Manga';
 
 export async function GET() {
+  console.log('📖 Manga list endpoint called');
+  
   try {
-    const manga = await Manga.find().populate('chapters');
-    return NextResponse.json(manga);
-  } catch (error) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
-  }
-}
+    console.log('1. Connecting to database...');
+    await dbConnect();
+    console.log('✅ Database connected');
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const manga = await Manga.create(body);
-    return NextResponse.json(manga, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Creation failed' }, { status: 500 });
+    console.log('2. Fetching manga list...');
+    const manga = await Manga.find().sort({ createdAt: -1 });
+    console.log('✅ Manga list fetched:', manga.length, 'items');
+
+    return NextResponse.json(manga);
+    
+  } catch (error: any) {
+    console.error('❌ Manga list error:', error);
+    
+    return NextResponse.json(
+      { 
+        error: 'Manga listesi alınamadı',
+        details: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
+      { status: 500 }
+    );
   }
 }
