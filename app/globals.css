@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+.scrollbar-gizle::-webkit-scrollbar {
+    display: none; /* Scrollbar'ı tamamen gizle */
+}
+
+/* 2. Firefox */
+.scrollbar-gizle {
+    -ms-overflow-style: none; /* IE ve Edge (eski) için */
+    scrollbar-width: none;  /* Firefox için */
+}
